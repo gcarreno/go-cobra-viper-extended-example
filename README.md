@@ -4,8 +4,8 @@ An experimentation in Go's `cobra` and `viper` with some extras.
 
 ## What it does
 
-- A `Config` struct with some hierarchy.
-- An `init` command that takes the defaults from the `Config` struct and writes them into a `config.[toml, js, yaml, yml]` file.
+- A `config.Config` struct with some hierarchy.
+- An `init` command that takes the defaults from the `config.Config` struct and writes them into a `config.[toml, js, yaml, yml]` file.
 - A `serve` command that exemplifies reading the configuration with the following order of importance:
   1. The command line flags.
   2. The environment variables.
