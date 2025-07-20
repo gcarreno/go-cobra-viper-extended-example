@@ -2,7 +2,7 @@
 
 An experimentation in Go's `cobra` and `viper` with some extras.
 
-## What it does
+## What it has
 
 - A `config.Config` struct with some hierarchy.
 - An `init` command that takes the defaults from the `config.Config` struct and writes them into a `config.[toml, js, yaml, yml]` file.
