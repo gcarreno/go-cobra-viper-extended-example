@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -19,6 +20,7 @@ const (
 	cFlagTypeLong  = "config-type"
 	cFlagTypeUsage = "config type for the config file: toml, json, yaml, yml"
 	cConfigName    = "config"
+	cConfigType    = "toml"
 )
 
 var (
@@ -78,7 +80,7 @@ func init() {
 	rootCmd.AddCommand(initCmd)
 
 	// Flag "config-type"
-	initCmd.Flags().StringVarP(&configType, cFlagTypeLong, cFlagType, "toml", cFlagTypeUsage)
+	initCmd.Flags().StringVarP(&configType, cFlagTypeLong, cFlagType, cConfigType, cFlagTypeUsage)
 	// Register the completion values for flag "config-type"
 	err := initCmd.RegisterFlagCompletionFunc(
 		cFlagTypeLong,
@@ -111,6 +113,18 @@ func runInitE(cmd *cobra.Command, args []string) error {
 		viper.SetConfigType(configType)
 		cfgFile = fmt.Sprintf("%s.%s", cConfigName, configType)
 	} else {
+		ext := filepath.Ext(cfgFile)
+		if ext == "" {
+			// We need to force an extension or else viper will give an error and
+			// I don't want to include a config type flag on the serve command, or
+			// even globally, for that matter
+			switch configType {
+			case "toml", "json", "yaml", "yml":
+				cfgFile = fmt.Sprintf("%s.%s", cfgFile, configType)
+			default:
+				cfgFile = fmt.Sprintf("%s.%s", cfgFile, cConfigType)
+			}
+		}
 		viper.SetConfigName(cfgFile)
 	}
 

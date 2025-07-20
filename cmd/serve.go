@@ -134,7 +134,10 @@ func init() {
 	serveCmd.Flags().Int32Var(&webPort, cFlagWebPortLong, config.Web.Port, cFlagWebPortUsage)
 	// Bind the flag to viper
 	viper.BindPFlag(cfg.ViperWebPort, serveCmd.Flags().Lookup(cFlagWebPortLong))
+}
 
+// Check if anything is wrong with the flags before we run the main code of the command
+func servePreRunE(cmd *cobra.Command, args []string) error {
 	// Initialize viper's config
 	if cfgFile == "" {
 		// Look for default file
@@ -148,9 +151,9 @@ func init() {
 	}
 
 	// Load .env file
-	err = godotenv.Load() // Automatically loads ".env"
+	err := godotenv.Load() // Automatically loads ".env"
 	if err != nil {
-		serveCmd.Println("No .env file found (that's okay)")
+		cmd.Println("No .env file found (that's okay)")
 	}
 
 	// Enable ENV binding
@@ -162,14 +165,11 @@ func init() {
 
 	// Read it
 	if err := viper.ReadInConfig(); err == nil {
-		serveCmd.Println("Using config file:", viper.ConfigFileUsed())
+		cmd.Println("Using config file:", viper.ConfigFileUsed())
 	} else {
-		serveCmd.Println("No config file found, continuing with flags/env/defaults")
+		cmd.Printf("No config file found, continuing with flags/env/defaults: %v\n", err)
 	}
-}
 
-// Check if anything is wrong with the flags before we run the main code of the command
-func servePreRunE(cmd *cobra.Command, args []string) error {
 	// Get the defaults
 	config = cfg.DefaultConfig()
 
